@@ -1,12 +1,9 @@
-const User = require('../models/userServices')
 const bcrypt = require('bcryptjs')
-const session = require("express-session");
+const {body,validationResult}=require('express-validator');
+const User = require('../models/userServices')
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-var cookieParser = require('cookie-parser');
-var express = require('express');
-var app = express();
-app.use(session({ secret: "cats", resave: false, saveUninitialized: true }));
+
 // : setting up the LocalStrategy 
 passport.use(
     new LocalStrategy((username, password, done) => {
@@ -17,15 +14,15 @@ passport.use(
             if (!user) {
                 return done(null, false, { message: "Incorrect username" });
             }
-            bcrypt.compare(password, user.password, (err, res) => { 
-                if (res) { 
-                  // passwords match! log user in 
-                  return done(null, user) 
-                } else { 
-                  // passwords do not match! 
-                  return done(null, false, { message: "Incorrect password" }) 
-                } 
-              })
+            bcrypt.compare(password, user.password, (err, res) => {
+                if (res) {
+                    // passwords match! log user in 
+                    return done(null, user)
+                } else {
+                    // passwords do not match! 
+                    return done(null, false, { message: "Incorrect password" })
+                }
+            })
         });
     })
 );
@@ -40,43 +37,27 @@ passport.deserializeUser(function (id, done) {
     });
 });
 
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(cookieParser());
-app.use(function (req, res, next) {
-    res.locals.currentUser = req.user;
-    next();
-});
 
+//===================  ALL VIEW PAGES RENDERING  =====================================================>
+//To view home page
+exports.home = (req, res) => { res.render('home', { title: "welcome to my club house App" }); }
+//To view sign-up successfully message
+exports.signUpSuccess = (req, res) => { res.render('home', { title: "New user registered successfully" }) }
+//To view log-in successfully message
+exports.logInSuccess = (req, res) => { res.render('log-in', { user:req.user}) }
+//To view log-out successfully message
+exports.logOutSuccess = (req, res) => { res.render('home', { title: " User log-out successfully" }) }
+
+//========================== GET ALL PAGES  ===========================================================>
 exports.getRegisterPage = (req, res) => {
     res.render("sign-up-form");
 }
+
 exports.getLoginPage = (req, res) => {
     res.render("log-in", { user: req.user });
 }
-exports.register = async (req, res, next) => {
-    await bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
-        if (err) {
-            return next(err);
-        }
-        else {
-            const user = {};
-            user.username= req.body.username;
-            user.password= hashedPassword;
-            User.create(user);
-            res.render('success')
-        }
-    });
-}
 
-exports.login = (req, res) => {
-    passport.authenticate("local", {
-        successRedirect: "/",
-        failureRedirect: "/"
-    })
-}
-
-exports.logout = (req, res) => {
+exports.getLogout = (req, res) => {
     req.logout(function (err) {
         if (err) {
             return next(err);
@@ -84,3 +65,30 @@ exports.logout = (req, res) => {
         res.redirect("/");
     });
 }
+
+//  =============================  All post requests ==========================================>
+
+exports.register =  (req, res, next) => {
+     bcrypt.hash(req.body.password, 10,async(err, hashedPassword) => {
+        if (err) {
+            return next(err);
+        }
+        else {
+            try{
+                await User.create({username:req.body.username,password:hashedPassword});
+                res.redirect('/sign-up-success');
+
+            }catch(e){
+                req.next(e);
+            }
+        }
+    });
+}
+
+exports.login = passport.authenticate('local', {
+    successRedirect: '/log-in-success',
+    failureRedirect: '/log-in'
+})
+
+
+
