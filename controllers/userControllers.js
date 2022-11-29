@@ -1,10 +1,10 @@
 const bcrypt = require('bcryptjs')
-const {body,validationResult}=require('express-validator');
-const User = require('../models/userServices')
+const { validationResult } = require('express-validator');
+const {User} = require('../models/userServices')
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 
-// : setting up the LocalStrategy 
+// : setting up the LocalStrategy   
 passport.use(
     new LocalStrategy((username, password, done) => {
         User.findOne({ username: username }, (err, user) => {
@@ -44,9 +44,13 @@ exports.home = (req, res) => { res.render('home', { title: "welcome to my club h
 //To view sign-up successfully message
 exports.signUpSuccess = (req, res) => { res.render('home', { title: "New user registered successfully" }) }
 //To view log-in successfully message
-exports.logInSuccess = (req, res) => { res.render('log-in', { user:req.user}) }
+exports.logInSuccess = (req, res) => { res.render('log-in', { user: req.user }) }
 //To view log-out successfully message
 exports.logOutSuccess = (req, res) => { res.render('home', { title: " User log-out successfully" }) }
+//To view log-out successfully message
+exports.getMembership = (req, res) => { res.render('home', { title: " you got  successfully membership" }) }
+//To view log-out successfully message
+exports.notGotMembership = (req, res) => { res.render('home', { title: " please register yourself in club house " }) }
 
 //========================== GET ALL PAGES  ===========================================================>
 exports.getRegisterPage = (req, res) => {
@@ -55,6 +59,9 @@ exports.getRegisterPage = (req, res) => {
 
 exports.getLoginPage = (req, res) => {
     res.render("log-in", { user: req.user });
+}
+exports.joinTheClub = (req, res) => {
+    res.render("join-the-club");
 }
 
 exports.getLogout = (req, res) => {
@@ -69,26 +76,53 @@ exports.getLogout = (req, res) => {
 //  =============================  All post requests ==========================================>
 
 exports.register =  (req, res, next) => {
-     bcrypt.hash(req.body.password, 10,async(err, hashedPassword) => {
-        if (err) {
-            return next(err);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            console.log(errors);
+            res.render("sign-up-form", { errors: errors.array() });
+            res.send();
         }
         else {
-            try{
-                await User.create({username:req.body.username,password:hashedPassword});
-                res.redirect('/sign-up-success');
+            bcrypt.hash(req.body.password, 10, async (err, hashedPassword) => {
+                if (err) {
+                    res.send('some thing happen wrong');
+                }
+                else {
+                    try {
+                        await User.create({ firstname:req.body.firstname ,lastname:req.body.lastname,
+                            username: req.body.username, password: hashedPassword });
+                        res.redirect('/sign-up-success');
 
-            }catch(e){
-                req.next(e);
-            }
+                    } catch (e) {
+                        return next(e);
+                    }
+                }
+            });
         }
-    });
-}
-
+    }
+// user login 
 exports.login = passport.authenticate('local', {
     successRedirect: '/log-in-success',
     failureRedirect: '/log-in'
-})
+});
+// // user join the club
+exports.joinClub= async(req,res)=>{
+    console.log(req.body);
+    let user = await User.findOne({username:req.body.username,password:req.body.password});
+    console.log(user)
+    if(user){
+    try{
+         await User.updateOne({username:req.body.username},{$set:{isMember:true}});
+         res.redirect('/getSuccessfullMembership');
+    }catch(err){
+        res.send(err);
+    }
+}
+else{
+    console.log('not member');
+    res.redirect('/notMember');
+}
+}
 
 
 

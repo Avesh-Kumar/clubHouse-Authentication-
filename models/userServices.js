@@ -2,7 +2,12 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 const UserSchema = new Schema({
-    username: { type: String, required: false },
-    password: { type: String, required: false }
+    firstname: { type: String, required: true ,unique:false},
+    lastname: { type: String, required: true ,unique:false},
+    username: { type: String, required: true ,unique:true},
+    password: { type: String, required: true,unique:false},
+    isMember: { type: Boolean,enum :[true,false],default:false}
 });
-module.exports = mongoose.model("User", UserSchema);
+
+const User = mongoose.model("User", UserSchema);
+module.exports = {User}

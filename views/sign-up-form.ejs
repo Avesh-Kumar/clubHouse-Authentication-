@@ -6,15 +6,24 @@
 </head> 
 <body>
   <a href="/">BACK</a>
-  <h1>Sign Up</h1> 
-  <form action="/sign-up" method="POST"> 
+  <h1>Sign Up</h1>
+  <% if(locals.errors) { %>
+    <% errors.forEach(error =>{ %>
+     <h1> <%= error.msg %></h1>
+    <% }) %>
+  <% } %>
+  <form action="/sign-up" method="POST">
+    <label for="firstname">First name</label> 
+    <input name="firstname" placeholder="First Name" type="text" /><br><br>
+    <label for="lastname">Last Name</label> 
+    <input name="lastname" placeholder="Last Name" type="text" /><br><br>
     <label for="username">Username</label> 
-    <input name="username" placeholder="username" type="text" /> 
+    <input name="username" placeholder="username" type="text" /><br><br>
     <label for="password">Password</label> 
-    <input name="password" type="password" placeholder="password"/>
+    <input name="password" type="password" placeholder="password"/><br><br>
     <label for="password"> Confirm Password</label> 
-    <input name="cpassword" type="password" placeholder=" confirm password"/> 
-    <button>Sign Up</button> 
+    <input name="cpassword" type="password" placeholder=" confirm password"/><br><br>
+    <button style="color: green;">Sign Up</button> 
   </form> 
 </body> 
 </html>
