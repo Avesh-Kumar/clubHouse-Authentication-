@@ -1,9 +1,12 @@
 var express = require('express');
 var userController = require('../controllers/userControllers');
+var messageController = require('../controllers/messageControllers');
+const {Message}=require('../models/messageServices');
 // var signUp=require('../middleware/signUp');
 const {User}=require('../models/userServices')
 const {check}=require('express-validator')
 var router = express.Router();
+//=================================> ALL USER CONTROLLER ================================>
 
 // ====================================   ALL GET REQUEST ===============================>
 
@@ -28,6 +31,7 @@ router.get('/log-out-success', userController.logOutSuccess);
 router.get('/getSuccessfullMembership', userController.getMembership);
 // To view you are not member of club house
 router.get('/notMember', userController.notGotMembership);
+
 
 // ===============================  ALL POST REQUEST ====================================>
 
@@ -56,5 +60,19 @@ router.post("/sign-up",[
 router.post("/log-in", userController.login);
 // USER JOIN CLUB
 router.post("/joinclub", userController.joinClub);
+
+//=========================================> ALL MESSAGE CONTROLLERS =================================>
+
+//========================== TAKE VIEWS PAGES====================================================>
+router.get('/create-message',messageController.getMessageForm);
+router.get('/amit',messageController.getAllAuthers);
+
+
+//================================ SUCCESS/FAILURE PAGES============================================>
+router.get('/success-message',messageController.successMessage);
+
+
+//==================================post req  =======================================================>
+router.post('/create-messages',messageController.createMessage);
 
 module.exports = router;

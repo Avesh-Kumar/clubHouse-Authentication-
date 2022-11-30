@@ -3,6 +3,7 @@ const { validationResult } = require('express-validator');
 const {User} = require('../models/userServices')
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
+const mongoose = require("mongoose");
 
 // : setting up the LocalStrategy   
 passport.use(
@@ -26,7 +27,7 @@ passport.use(
         });
     })
 );
-
+``
 passport.serializeUser(function (user, done) {
     done(null, user.id);
 });
@@ -50,7 +51,7 @@ exports.logOutSuccess = (req, res) => { res.render('home', { title: " User log-o
 //To view log-out successfully message
 exports.getMembership = (req, res) => { res.render('home', { title: " you got  successfully membership" }) }
 //To view log-out successfully message
-exports.notGotMembership = (req, res) => { res.render('home', { title: " please register yourself in club house " }) }
+exports.notGotMembership = (req, res) => { res.render('home', { title: " please login yourself in club house " }) }
 
 //========================== GET ALL PAGES  ===========================================================>
 exports.getRegisterPage = (req, res) => {
@@ -107,22 +108,38 @@ exports.login = passport.authenticate('local', {
 });
 // // user join the club
 exports.joinClub= async(req,res)=>{
-    console.log(req.body);
-    let user = await User.findOne({username:req.body.username,password:req.body.password});
-    console.log(user)
-    if(user){
+  if(req.user){  
+const id = mongoose.Types.ObjectId(req.user._id);
+console.log(id,'=====================');
+let user=await User.findById({_id:id})
+if(user.username === req.body.username){
     try{
-         await User.updateOne({username:req.body.username},{$set:{isMember:true}});
-         res.redirect('/getSuccessfullMembership');
+        await User.findOneAndUpdate({username:user.username},{$set:{isMember:true}});
+        res.redirect('/getSuccessfullMembership')
     }catch(err){
-        res.send(err);
+        res.send(err)
     }
 }
 else{
-    console.log('not member');
+    res.redirect('/notMember')
+}
+
+}
+
+else{
     res.redirect('/notMember');
 }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
