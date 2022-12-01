@@ -18,6 +18,8 @@ router.get("/log-in", userController.getLoginPage);
 router.get("/log-out", userController.getLogout);
 // USER JOIN THE CLUB PAGE
 router.get("/join-the-club", userController.joinTheClub);
+// USER MADE ADMIN
+router.get('/admin',userController.madeAdmin)
 //========================= VIEW PAGES ====================================================>
 // To view home page 
 router.get("/", userController.home);
@@ -27,11 +29,11 @@ router.get('/sign-up-success', userController.signUpSuccess);
 router.get('/log-in-success', userController.logInSuccess);
 // To view log-out-success
 router.get('/log-out-success', userController.logOutSuccess);
-// To view get successfully join the club
-router.get('/getSuccessfullMembership', userController.getMembership);
+
 // To view you are not member of club house
 router.get('/notMember', userController.notGotMembership);
-
+// To view you are admin of club house
+router.get('/becomeadmin', userController.becomeAdminship);
 
 // ===============================  ALL POST REQUEST ====================================>
 
@@ -60,6 +62,7 @@ router.post("/sign-up",[
 router.post("/log-in", userController.login);
 // USER JOIN CLUB
 router.post("/joinclub", userController.joinClub);
+router.post('/makeadmin',userController.becomeAdmin);
 
 //=========================================> ALL MESSAGE CONTROLLERS =================================>
 
@@ -70,9 +73,22 @@ router.get('/amit',messageController.getAllAuthers);
 
 //================================ SUCCESS/FAILURE PAGES============================================>
 router.get('/success-message',messageController.successMessage);
-
+// To view get successfully join the club
+router.get('/getSuccessfullMembership', messageController.getMembership);
+router.get('/notadmin', messageController.notAdmin);
 
 //==================================post req  =======================================================>
 router.post('/create-messages',messageController.createMessage);
+
+
+//======================all get/update/delete request ==================================================>
+router.get('/getAllMembers',messageController.allMembers);
+router.get('/getAllMessage',messageController.allMessages);
+router.get('/getanddelete',messageController.getmessagesofAdmin);
+router.post('/deletemessage',messageController.deleteMessagesByAdmin);
+
+
+
+
 
 module.exports = router;

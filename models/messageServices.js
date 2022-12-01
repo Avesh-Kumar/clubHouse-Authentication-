@@ -2,10 +2,11 @@ const mongoose =require('mongoose');
 const Schema=mongoose.Schema;
 const messageSchema= new Schema(
     {
-        auther:{type:String,require:true,unique:false},
+        author:{type:String,require:true,unique:false},
         title:{type:String,require:true,unique:false},
         text:{type:String,require:true,unique:false},
-        timestampe:{type:Date,default:Date.now}
+        timestamp:{type:Date,default:Date.now},
+        admin:{type:Boolean,enum:[true,false],default:false}
     }
 );
 const Message= mongoose.model("Message",messageSchema);

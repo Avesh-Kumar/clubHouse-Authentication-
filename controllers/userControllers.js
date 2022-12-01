@@ -48,11 +48,11 @@ exports.signUpSuccess = (req, res) => { res.render('home', { title: "New user re
 exports.logInSuccess = (req, res) => { res.render('log-in', { user: req.user }) }
 //To view log-out successfully message
 exports.logOutSuccess = (req, res) => { res.render('home', { title: " User log-out successfully" }) }
-//To view log-out successfully message
-exports.getMembership = (req, res) => { res.render('home', { title: " you got  successfully membership" }) }
+
 //To view log-out successfully message
 exports.notGotMembership = (req, res) => { res.render('home', { title: " please login yourself in club house " }) }
-
+// being admin
+exports.becomeAdminship =(req,res) => {res.render('home',{title :"you became admin of club house successfully"})}
 //========================== GET ALL PAGES  ===========================================================>
 exports.getRegisterPage = (req, res) => {
     res.render("sign-up-form");
@@ -70,8 +70,12 @@ exports.getLogout = (req, res) => {
         if (err) {
             return next(err);
         }
-        res.redirect("/");
+        res.redirect("/log-out-success");
     });
+}
+
+exports.madeAdmin = (req,res) => {
+    res.render('make-admin');
 }
 
 //  =============================  All post requests ==========================================>
@@ -110,7 +114,6 @@ exports.login = passport.authenticate('local', {
 exports.joinClub= async(req,res)=>{
   if(req.user){  
 const id = mongoose.Types.ObjectId(req.user._id);
-console.log(id,'=====================');
 let user=await User.findById({_id:id})
 if(user.username === req.body.username){
     try{
@@ -130,8 +133,24 @@ else{
     res.redirect('/notMember');
 }
 }
-
-
+exports.becomeAdmin = async (req,res)=>{
+ if(req.user){
+    const id=mongoose.Types.ObjectId(req.user._id);
+   let existUser= await User.findById({_id:id});
+   if(existUser.username === req.body.username){
+    try{
+       let admin= await User.findOneAndUpdate({username:existUser.username},{$set:{isAdmin:true}});
+        res.redirect('/becomeadmin');
+    }catch(err){
+        res.send(err);
+    }
+   }else{
+    res.redirect('/notMember');
+   }
+ }else{
+    res.redirect('/notMember');
+ }
+}
 
 
 

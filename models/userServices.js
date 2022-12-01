@@ -6,7 +6,9 @@ const UserSchema = new Schema({
     lastname: { type: String, required: true ,unique:false},
     username: { type: String, required: true ,unique:true},
     password: { type: String, required: true,unique:false},
-    isMember: { type: Boolean,enum :[true,false],default:false}
+    isMember: { type: Boolean,enum :[true,false],default:false},
+    isAdmin:{type:Boolean,enum:[true,false],default:false}
+
 });
 
 const User = mongoose.model("User", UserSchema);

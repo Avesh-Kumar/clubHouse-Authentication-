@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <a href="/">WELCOME</a><br><br>
+    <%members.forEach((value)=>{%>
+    <form style="position: relative; left:20px; border: 3px solid black;  width: 500px; margin: 3em;">
+        <label for="username">Title</label>&nbsp; &nbsp;
+        <input type="text" value="<%=value.title %>"><br><br>
+        <label for="username">Author</label> &nbsp;&nbsp;
+        <input type="text" value="<%=value.text %>"><br><br>
+        <label for="username">Date</label>&nbsp;&nbsp;
+        <input type="datetime" value="<%=value.timestamp %>"><br><br>
+    </form>
+    
+    <%})%>
+ 
+    
+</body>
+</html>
